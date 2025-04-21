@@ -1,21 +1,20 @@
-# DA6401 assignment 2
-##DA24M006 GAURAV KUMAR M.Tech DSAI
-### CNN Model for iNaturalist Dataset Classification
-
-This repository contains the implementation of a Custom CNN model for image classification on the iNaturalist dataset. The project is structured to train a CNN model from scratch, perform hyperparameter tuning, and evaluate the best model on test data.
+# DA6401 Assignment 2
+### DA24M006 GAURAV KUMAR M.Tech DSAI
 
 ## File Structure
 
 ```
-.
-├── README.md                      # This file
-├── PARTA/                         # Part A implementation
+├── README.md                     
+├── PARTA/                        
 │   ├── q1_CustomCNN.py            # Custom CNN model implementation
 │   ├── q2_iNaturalist_dataset_preprocess.py # Dataset preprocessing utilities
 │   ├── q2_sweep_run.py            # Hyperparameter tuning with wandb
 │   └── q4_best_model_test_plot.py # Evaluation of best model on test data and plotinng prediction plots.
-├── PARTB/                         # Part B implementation (fine-tuning pre-trained models)
-    ├──       
+├── PARTB/                        
+│   ├── q1_GoogLeNet_pretrained.py
+│   ├── q3_iNaturalist_dataset_preprocess.py
+│   ├── q3_fine_tune_GoogLeNet.py
+│   └── q3_main.py
 └── inaturalist_12K/               # Dataset directory
     ├── train/                     # Training images organized by class folders i will use it as training and validation dataset
     └── val/                       # i will use this val folder as testing dataset (test images organized by class folders)
@@ -33,7 +32,9 @@ This repository contains the implementation of a Custom CNN model for image clas
 
 ## Dataset Structure
 
-The iNaturalist dataset should i organized as follows: (for kaggle i put inaturalist_12K in input folder)
+The iNaturalist dataset used contains 10 classes of natural world images
+I kept my iNaturalist_12k dataset at input folder of kaggle 
+Note: update the `data_dir` as required for run
 ```
 inaturalist_12K/
 ├── train/
@@ -49,15 +50,16 @@ inaturalist_12K/
     │   └── ...
     └── ...
 ```
+## PARTA
+###  Training CNN from Scratch
 
+The Part A implementation focuses on implementation of a Custom CNN model for image classification on the iNaturalist dataset.
+Code for this section is located in the PARTA directory.
+I have to train a CNN model from scratch, perform hyperparameter tuning, and evaluate the best model on test data.
 ## Implementation Details
 
-### Part A: Training CNN from Scratch
-
-### Part A Flow:
-
-1. **Model Definition**: `q1_CustomCNN.py` defines the neural network architecture
-2. **Data Preparation**: `q2_iNaturalist_dataset_preprocess.py` handles dataset splitting and preprocessing
+1. **Building Custom CNN Model**: `q1_CustomCNN.py` flexible CNN model having 5 Convolution Layer, 1 dense layer and output layer.
+2. **Data Prep**: `q2_iNaturalist_dataset_preprocess.py` handles dataset splitting and preprocessing
 3. **Model Training and Tuning**: `q2_sweep_run.py` trains multiple models with different hyperparameters
 4. **Model Evaluation**: `q4_best_model_test_plot.py` evaluates the best model and visualizes predicted images
 
@@ -166,13 +168,59 @@ This will:
 - Log evaluation results to W&B
 
 
-## Notes
+## Part B
+### Fine-tuning Pre-trained Models I used GoogLeNet Pretrained Model
+
+The Part B implementation focuses on fine-tuning pre-trained models on GoogLeNet on the iNaturalist dataset.
+Code for this section is located in the PARTB directory.
+
+### Flow of Execution
+
+1. **GoogLeNet Pretrained model Load and setup**:
+   - Load pre-trained GoogLeNet with ImageNet weights
+   - Modify output layers for 10 iNaturalist classes
+   - Apply freezing strategy (freeze all layers except the final classifier)
+
+2. **Data Preparation(spliting, transforming,loading)**:
+   - Split training data into training (80%) and validation (20%) sets with stratification
+   - Apply data augmentation to the training set
+   - Create DataLoaders for efficient batch processing
+
+3. **Pretrained GoogLeNet mdoel is trained and Fine-tuned**:
+   - Initialize Weights & Biases for experiment tracking
+   - Train the model with cross-entropy loss and Adam optimizer
+   - Implement learning rate scheduling for better convergence
+   - Save the best model based on validation accuracy
+
+4. **Test Accuracy on test dataset**:
+   - Assess model performance on the test dataset
+   - Log final results to Weights & Biases dashboard
+
+### Implementation Details
+
+The implementation follows a modular approach with separate Python files for each component:
+
+1. **q1_GoogLeNet_pretrained.py**: 
+   - Loads the pre-trained GoogLeNet model with ImageNet weights
+   - Modifies the final classifier layers to accommodate the 10 classes of iNaturalist dataset
+   - Adapts auxiliary classifiers for the new class count
+
+2. **q3_iNaturalist_dataset_preprocess.py**: 
+   - Implements stratified data splitting to ensure class balance
+   - Applies data augmentation techniques to improve model generalization
+   - Creates efficient data loaders for training, validation, and testing
+
+3. **q3_fine_tune_GoogLeNet.py**: 
+   - Implements the core fine-tuning process with configurable parameters
+   - Handles auxiliary outputs specific to GoogLeNet architecture
+   - Provides utilities for model evaluation
+   - Integrates with Weights & Biases for experiment tracking
+
+4. **q3_main.py**: 
+   - main function to fine-tune the pretrained GoogLeNet Model 
 
 
-- 
 
 
 
-### Part B: Fine-tuning Pre-trained Models I used GoogLeNet Pretrained Model
 
-The Part B implementation focuses on fine-tuning pre-trained models on GoogLeNet on the iNaturalist dataset. Code for this section is located in the PARTB directory.
