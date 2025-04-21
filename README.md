@@ -6,15 +6,15 @@
 ```
 ├── README.md                     
 ├── PARTA/                        
-│   ├── q1_CustomCNN.py            # Custom CNN model implementation
+│   ├── q1_CustomCNN.py                      # Custom CNN model implementation
 │   ├── q2_iNaturalist_dataset_preprocess.py # Dataset preprocessing utilities
 │   ├── q2_sweep_run.py            # Hyperparameter tuning with wandb
 │   └── q4_best_model_test_plot.py # Evaluation of best model on test data and plotinng prediction plots.
 ├── PARTB/                        
-│   ├── q1_GoogLeNet_pretrained.py
-│   ├── q3_iNaturalist_dataset_preprocess.py
-│   ├── q3_fine_tune_GoogLeNet.py
-│   └── q3_main.py
+│   ├── q1_GoogLeNet_pretrained.py    # GoogLeNet Pretrained Model Loading and modify to work on iNaturalist dataset
+│   ├── q3_iNaturalist_dataset_preprocess.p    # Dataset Preparation(spliting, transforming and loading as batch)
+│   ├── q3_fine_tune_GoogLeNet.py            # Fine tune the pretrained GoogLeNet model
+│   └── q3_main.py                            # main function to fine-tune Q3.PARTB
 └── inaturalist_12K/               # Dataset directory
     ├── train/                     # Training images organized by class folders i will use it as training and validation dataset
     └── val/                       # i will use this val folder as testing dataset (test images organized by class folders)
@@ -59,9 +59,9 @@ I have to train a CNN model from scratch, perform hyperparameter tuning, and eva
 ## Implementation Details
 
 1. **Building Custom CNN Model**: `q1_CustomCNN.py` flexible CNN model having 5 Convolution Layer, 1 dense layer and output layer.
-2. **Data Prep**: `q2_iNaturalist_dataset_preprocess.py` handles dataset splitting and preprocessing
-3. **Model Training and Tuning**: `q2_sweep_run.py` trains multiple models with different hyperparameters
-4. **Model Evaluation**: `q4_best_model_test_plot.py` evaluates the best model and visualizes predicted images
+2. **Data Preparation**: `q2_iNaturalist_dataset_preprocess.py` handles dataset splitting and preprocessing
+3. **Custom CNN Model Training and hyper parameter Tuning**: `q2_sweep_run.py` trains multiple models with different hyperparameters
+4. **Model Evaluation Using test dataset and Prediction plot**: `q4_best_model_test_plot.py` evaluates the best model and visualizes predicted images
 
 
 #### 1. Custom CNN Model (`PARTA/q1_CustomCNN.py`)
@@ -102,31 +102,31 @@ Parameters tuned include:
 - Data augmentation
 - Learning rate
 ### sweep configuration
-sweep_config = {
-    'method': 'bayes',  # Bayesian optimization for efficient search
-    'metric': {
-        'name': 'val_acc',
-        'goal': 'maximize'
-    },
-    'parameters': {
-        'image_size': {'value': 224},  # Fixed image size
-        'batch_size': {'values': [32, 64]},
-        'num_filters': {'values': [
-            [32, 32, 32, 32, 32],     # Same in all layers
-            [32, 64, 128, 256, 512],  # Doubling in each subsequent layer
-            [128, 64, 32, 16, 8],    #  halving in each subsequent layer
-            [64, 128, 256, 128, 64]   # Increasing then decreasing
-        ]},
-        'filter_size': {'value': 3},
-        'activation': {'values': ['relu', 'gelu', 'silu', 'mish']},
-        'dense_neurons': {'values': [128, 256, 512, 1024]},
-        'dropout_rate': {'values': [0.2, 0.3]},
-        'batch_norm': {'values': [True, False]},
-        'data_augment': {'values': [True, False]},
-        'learning_rate': {'values': [0.001, 0.0005, 0.0001]},
-        'epochs': {'value': 10}  # Fixed number of epochs
-    }
-}
+-sweep_config = {
+-    'method': 'bayes',  # Bayesian optimization for efficient search
+-    'metric': {
+-    'name': 'val_acc',
+-     'goal': 'maximize'
+-    },
+-    'parameters': {
+-    'image_size': {'value': 224},  # Fixed image size
+-    'batch_size': {'values': [32, 64]},
+-    'num_filters': {'values': [
+-           [32, 32, 32, 32, 32],     # Same in all layers
+  -         [32, 64, 128, 256, 512],  # Doubling in each subsequent layer
+  -         [128, 64, 32, 16, 8],    #  halving in each subsequent layer
+-           [64, 128, 256, 128, 64]   # Increasing then decreasing
+  -         ]},
+-        'filter_size': {'value': 3},
+-       'activation': {'values': ['relu', 'gelu', 'silu', 'mish']},
+-      'dense_neurons': {'values': [128, 256, 512, 1024]},
+  -    'dropout_rate': {'values': [0.2, 0.3]},
+  -     'batch_norm': {'values': [True, False]},
+ -       'data_augment': {'values': [True, False]},
+  -      'learning_rate': {'values': [0.001, 0.0005, 0.0001]},
+  -      'epochs': {'value': 10}  # Fixed number of epochs
+  -  }
+-}
 
 #### 4. Best Model Evaluation and Prection Plot as 10x3(`PARTA/q4_best_model_test_plot.py`)
 
