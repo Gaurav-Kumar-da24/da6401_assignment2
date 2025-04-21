@@ -43,3 +43,21 @@ def setup_googlenet_model(num_classes=10):
         model.AuxLogits.fc = nn.Linear(in_features, num_classes)
     
     return model
+
+# fine-tuning strategies i use only last layer trainable (freze all layers except last layer) 
+def freeze_layers(model, strategy='all_but_last'):
+    # First set all parameters to not require gradients (freeze all)
+    for param in model.parameters():
+        param.requires_grad = False
+    
+    if strategy == 'all_but_last':
+        # Strategy: Freeze all layers except the final classifier
+        for param in model.fc.parameters():
+            param.requires_grad = True
+        
+        # Also unfreeze auxiliary classifiers if they exist
+        if hasattr(model, 'AuxLogits') and model.AuxLogits is not None:
+            for param in model.AuxLogits.parameters():
+                param.requires_grad = True
+    return model
+
