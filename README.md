@@ -17,8 +17,8 @@ This repository contains the implementation of a Custom CNN model for image clas
 ├── PARTB/                         # Part B implementation (fine-tuning pre-trained models)
     ├──       
 └── inaturalist_12K/               # Dataset directory
-    ├── train/                     # Training images organized by class folders
-    └── val/                       # Validation/test images organized by class folders
+    ├── train/                     # Training images organized by class folders i will use it as training and validation dataset
+    └── val/                       # i will use this val folder as testing dataset (test images organized by class folders)
 ```
 
 ## Requirements
